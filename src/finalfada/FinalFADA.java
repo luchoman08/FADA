@@ -5,12 +5,63 @@
  */
 package finalfada;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  *
  * @author lucho
  */
 public class FinalFADA {
-String lcs(String[] strings)
+private File fichero; //contiene los resultados de las loterias en formato separado por comas ej: 27/01/2001,1,2,5,20,27,33
+private ArrayList<ResultadoLoteria> loteriasEstructuradas; //guarda por cada fila un vector que representa un resultado de loteria:     
+private ArrayList<String> loteriasSimbolos;
+public FinalFADA(){
+    this.loteriasSimbolos = new ArrayList<String>();
+    this.loteriasEstructuradas = new ArrayList<ResultadoLoteria>();
+}
+public void setFichero(File newFichero){
+    this.fichero = newFichero;
+}
+public void inicializarLoterisSimbolos(){
+    for(int i = 0 ;i < getLoteriasEstructuradas().size(); i++){
+        this.getLoteriasSimbolos().add(this.getLoteriasEstructuradas().get(i).getResultadosSimbolos());
+    }
+}
+protected File getFichero()
+{
+    return this.fichero;
+}
+
+public void openFile(String ruta){
+    
+    this.fichero = new File(ruta);
+    
+}
+/*
+inicializa las loterias estructuradas desde un fichero de texto 
+*/
+
+public void inicializarLoteriasEstructuradas(String ruta) throws FileNotFoundException, IOException, ParseException{ 
+    this.openFile(ruta);
+    FileReader fr = new FileReader (this.fichero);
+    BufferedReader br = new BufferedReader(fr);
+    String linea;
+    while((linea=br.readLine())!=null){
+        ResultadoLoteria tmp = new ResultadoLoteria(linea);
+        this.getLoteriasEstructuradas().add(tmp);    
+       // tmp.printInfo();
+    }
+     
+}
+
+public String lcs(String[] strings)
 {
     if (strings.length == 0)
         return "";
@@ -30,7 +81,7 @@ String lcs(String[] strings)
         indexes[i] = strings[i].length() - 1;
     return lcsBack(strings, indexes, cache);
 }
-String lcsBack(String[] strings, int[] indexes, String[] cache)
+public String lcsBack(String[] strings, int[] indexes, String[] cache)
 {
     for (int i = 0; i < indexes.length; i++ )
         if (indexes[i] == -1)
@@ -88,7 +139,7 @@ String lcsBack(String[] strings, int[] indexes, String[] cache)
         return longeststring;
     }
 }
-int calcCachePos(int[] indexes, String[] strings)
+public int calcCachePos(int[] indexes, String[] strings)
 {
     int factor = 1;
     int pos = 0;
@@ -102,12 +153,50 @@ int calcCachePos(int[] indexes, String[] strings)
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException, IOException {
         // TODO code application logic here
-        String[] a = {"sfsdfareffr", "saer", "ser"};
+        String[] a = {"68GI!!", ">BKL!!", "#*46=B!!"};
+        //ResultadoLoteria res = new ResultadoLoteria("27/11/2016");
         FinalFADA proyecto = new FinalFADA();
-        System.out.print(proyecto.lcs(a));
+        Config cfg = new Config();
+        //System.out.println(proyecto.lcs(a));
+        //proyecto.inicializarLoteriasEstructuradas(System.getProperty("user.dir") +"/src/data/loterias/loterias.txt");
+         proyecto.inicializarLoteriasEstructuradas(cfg.rutaLoterias);
+         proyecto.inicializarLoterisSimbolos();
+        // System.out.println(proyecto.lcs(proyecto.getLoteriasSimbolos().toArray(new String[proyecto.getLoteriasSimbolos().size()])));
+        System.out.println(Arrays.toString(proyecto.getLoteriasSimbolos().toArray(new String[proyecto.getLoteriasSimbolos().size()])));
+        String[] b = proyecto.getLoteriasSimbolos().toArray(new String[proyecto.getLoteriasSimbolos().size()]);
+        System.out.println(proyecto.lcs(b));
+      //  System.out.println(res.getFechaResultado());
         
+    }
+
+    /**
+     * @return the loteriasSimbolos
+     */
+    public ArrayList<String> getLoteriasSimbolos() {
+        return loteriasSimbolos;
+    }
+
+    /**
+     * @param loteriasSimbolos the loteriasSimbolos to set
+     */
+    public void setLoteriasSimbolos(ArrayList<String> loteriasSimbolos) {
+        this.loteriasSimbolos = loteriasSimbolos;
+    }
+
+    /**
+     * @return the loteriasEstructuradas
+     */
+    public ArrayList<ResultadoLoteria> getLoteriasEstructuradas() {
+        return loteriasEstructuradas;
+    }
+
+    /**
+     * @param loteriasEstructuradas the loteriasEstructuradas to set
+     */
+    public void setLoteriasEstructuradas(ArrayList<ResultadoLoteria> loteriasEstructuradas) {
+        this.loteriasEstructuradas = loteriasEstructuradas;
     }
     
     
